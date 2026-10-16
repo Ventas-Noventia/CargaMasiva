@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0f4c81">
+  <meta name="description" content="Prepara tu catálogo Noventia: importa un Excel, ajusta productos y descarga tu plantilla de carga.">
+  <title>Noventia · Carga de catálogo</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%230f4c81'/%3E%3Cpath d='M11 29V11h5l9 12V11h5v18h-5L16 17v12z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./vendor/jszip.min.js" defer></script>
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true"><defs>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m-4 4 4-4 4 4M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6M8 13h8M8 17h5"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 9v12M15 9v12M3 15h18"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="m10.3 3.8-8 14a2 2 0 0 0 1.7 3h16a2 2 0 0 0 1.7-3l-8-14a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4m0 4h.01"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="m15 5 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15z"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 5 4 10l5 5M4 10h10a6 6 0 0 1 0 12"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V3H3v13h5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V6a4 4 0 0 1 8 0v4m-4 5v2"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m9 5 11 7-11 7z"/></symbol>
+  </defs></svg>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="./" aria-label="Noventia, inicio">
+        <img src="/logo2.png" alt="Logo" class="img-banner">
+      </a>
+      <div class="topbar-right">
+        <span class="private-badge">
+          
+          Admin</span>
+          <span class="avatar" aria-label="Noventia">NV</span>
+        </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="page-heading">
+      <div><div class="eyebrow">CATÁLOGO NOVENTIA</div><h1>Tu inventario. Tu plantilla.</h1><p>Sube, ajusta y prepara todos tus productos desde un solo lugar.</p></div>
+      <div class="heading-actions"><button type="button" class="button button-quiet" id="demo-btn"><svg class="icon"><use href="#i-play"/></svg>Probar ejemplo</button><button type="button" class="button button-outline" id="reset-btn"><svg class="icon"><use href="#i-plus"/></svg>Nueva carga</button></div>
+    </section>
+
+    <nav class="steps" aria-label="Pasos para preparar el catálogo">
+      <a href="#files-section" class="step current" id="step-1"><span class="step-number">1</span><span>Carga tus archivos<small>Inventario y plantilla</small></span></a>
+      <svg class="icon step-arrow"><use href="#i-chevron"/></svg>
+      <a href="#rules-section" class="step" id="step-2"><span class="step-number">2</span><span>Define las reglas<small>Columnas, IVA y categorías</small></span></a>
+      <svg class="icon step-arrow"><use href="#i-chevron"/></svg>
+      <a href="#products-section" class="step" id="step-3"><span class="step-number">3</span><span>Revisa y descarga<small>Tu catálogo, listo para revisar</small></span></a>
+      <span class="save-status" id="save-status"><span class="status-dot"></span>Guardado en este navegador</span>
+    </nav>
+
+    <section id="files-section" class="files-section" aria-labelledby="files-heading">
+      <h2 class="sr-only" id="files-heading">Archivos de trabajo</h2>
+      <div class="file-card" id="source-drop">
+        <div class="file-card-heading"><div class="file-label"><span class="small-step">01</span>Archivo de origen</div><span class="tag tag-muted" id="source-tag">Sin archivo</span></div>
+        <label class="drop-zone" for="source-input" id="source-upload-label">
+          <span class="upload-icon"><svg class="icon"><use href="#i-upload"/></svg></span>
+          <span><strong id="source-title">Arrastra aquí tu inventario</strong><span id="source-subtitle">o <b>elige un archivo</b> de tu computadora</span></span>
+          <span class="file-extension">XLSX / CSV</span>
+        </label>
+        <input class="sr-only" type="file" id="source-input" accept=".xlsx,.csv">
+        <div class="file-card-footer"><span id="source-meta">Archivos .xlsx o .csv · Hasta 30 MB</span><div id="sheet-control" hidden><label for="source-sheet">Hoja</label><select id="source-sheet" aria-label="Hoja del inventario"></select><label for="header-row">Encabezados</label><input id="header-row" type="number" min="1" max="1048576" value="1" title="Fila que contiene los nombres de las columnas"></div></div>
+      </div>
+      <div class="file-card" id="template-drop">
+        <div class="file-card-heading"><div class="file-label"><span class="small-step">02</span>Plantilla de destino</div><span class="tag tag-teal" id="template-tag">Incluida</span></div>
+        <label class="drop-zone template-zone" for="template-input">
+          <span class="upload-icon template-icon"><svg class="icon"><use href="#i-grid"/></svg></span>
+          <span><strong id="template-title">Plantilla de carga Noventia</strong><span id="template-subtitle">Ya está lista. Haz clic para usar otra plantilla.</span></span>
+          <span class="template-check"><svg class="icon"><use href="#i-check"/></svg></span>
+        </label>
+        <input class="sr-only" type="file" id="template-input" accept=".xlsx">
+        <div class="file-card-footer"><span id="template-meta">Cargando plantilla…</span><a href="./plantilla-base.xlsx" download="Plantilla_carga_Noventia.xlsx" class="text-link"><svg class="icon"><use href="#i-download"/></svg>Descargar base</a></div>
+      </div>
+    </section>
+    <div class="privacy-line"><svg class="icon"><use href="#i-lock"/></svg>Los archivos se procesan en tu navegador. Tu avance se guarda en este dispositivo.<span id="demo-notice" class="demo-notice" hidden>Modo de ejemplo · datos de demostración</span></div>
+
+    <section class="panel rules-panel" id="rules-section" aria-labelledby="rules-heading">
+      <div class="panel-heading"><div class="panel-title"><span class="panel-icon"><svg class="icon"><use href="#i-settings"/></svg></span><div><h2 id="rules-heading">Reglas de conversión</h2><p>Decide cómo quieres transformar tu archivo.</p></div></div><div class="rule-actions"><span class="tag tag-amber" id="pending-rules" hidden>Hay cambios por aplicar</span><button type="button" class="button button-primary" id="apply-btn" disabled>Aplicar reglas<svg class="icon"><use href="#i-arrow"/></svg></button></div></div>
+      <div class="rule-tabs" role="tablist" aria-label="Configuración de la conversión">
+        <button type="button" class="rule-tab" id="tab-mapping" data-tab="mapping" role="tab" aria-controls="pane-mapping" aria-selected="false">Columnas del archivo</button>
+        <button type="button" class="rule-tab active" id="tab-values" data-tab="values" role="tab" aria-controls="pane-values" aria-selected="true">Precios y valores</button>
+        <button type="button" class="rule-tab" id="tab-categories" data-tab="categories" role="tab" aria-controls="pane-categories" aria-selected="false">Categorías y ubicaciones</button>
+      </div>
+      <div class="rule-pane" id="pane-values" role="tabpanel" aria-labelledby="tab-values">
+        <div class="price-rule">
+          <div class="price-rule-fields"><label class="field">Tratamiento del precio<select id="iva-mode" data-rule="ivaMode"><option value="add">Sumar IVA al precio original</option><option value="only">Calcular únicamente el IVA</option><option value="keep">Conservar el precio original</option></select></label><label class="field tax-field">IVA<div class="input-suffix"><input id="iva-rate" data-rule="iva" type="number" min="0" max="100" step="0.01" value="16"><span>%</span></div></label></div>
+          <div class="price-example"><span>Por ejemplo</span><strong>$100.00</strong><svg class="icon"><use href="#i-arrow"/></svg><strong id="iva-example">$116.00</strong><span class="tag tag-teal" id="iva-example-tag">IVA incluido</span></div>
+        </div>
+        <div class="field-grid values-grid">
+          <label class="field">Condición para todos<select data-rule="condition" id="rule-condition"><option value="nuevo">Nuevo</option><option value="usado">Usado</option><option value="">Usar columna del archivo</option></select></label>
+          <label class="field">Estado para todos<select data-rule="status" id="rule-status"><option value="draft">Draft (borrador)</option><option value="borrador">Borrador</option><option value="">Usar columna del archivo</option></select></label>
+          <label class="field">Moneda<input data-rule="currency" id="rule-currency" value="MXN" list="currency-options" maxlength="12"></label>
+          <label class="field">Almacén para todos<input data-rule="warehouse" id="rule-warehouse" value="A-Almacen" list="warehouse-options"><button type="button" class="field-link" id="use-warehouse-btn">Usar almacén de la plantilla</button></label>
+        </div>
+        <p class="inline-note"><svg class="icon"><use href="#i-info"/></svg>El IVA siempre parte del precio de origen: volver a aplicar las reglas no lo suma otra vez. Tus ajustes manuales se conservan.</p>
+      </div>
+      <div class="rule-pane" id="pane-mapping" role="tabpanel" aria-labelledby="tab-mapping" hidden>
+        <div class="mapping-caption"><p>Relaciona cada campo de la plantilla con una columna de tu inventario.</p><button type="button" class="text-link" id="automap-btn">Detectar columnas</button></div>
+        <div class="field-grid mapping-grid" id="mapping-grid"></div>
+        <button type="button" class="text-link show-all" id="show-mapping-btn">Mostrar las 34 columnas</button>
+        <p class="inline-note"><svg class="icon"><use href="#i-info"/></svg>“Cantidad de piezas” es opcional. Si la dejas vacía, esta plantilla utiliza 1. Elige “Existencia” si quieres trasladar las cantidades de tu inventario.</p>
+      </div>
+      <div class="rule-pane" id="pane-categories" role="tabpanel" aria-labelledby="tab-categories" hidden>
+        <div class="category-rules"><label class="check-label"><input type="checkbox" data-rule="categorySpaces" checked>Espacios por guiones</label><label class="check-label"><input type="checkbox" data-rule="categoryDe" checked>Quitar la palabra “de”</label><label class="check-label"><input type="checkbox" data-rule="categoryLower" checked>Usar minúsculas</label><label class="check-label"><input type="checkbox" data-rule="categoryAccents">Quitar acentos</label><label class="check-label"><input type="checkbox" data-rule="locationDashes" checked>Ubicaciones: A9-4 → A-9-4</label></div>
+        <div class="equivalences-heading"><h3>Equivalencias de categorías</h3><p>Si una categoría no existe en la plantilla, selecciona su equivalente del catálogo.</p></div>
+        <div id="category-equivalences" class="category-equivalences"><div class="small-empty">Sube un inventario para revisar sus categorías.</div></div>
+      </div>
+    </section>
+
+    <section id="products-section" aria-labelledby="products-heading">
+      <div class="section-heading"><div><div class="eyebrow">VISTA PREVIA</div><h2 id="products-heading">Revisa tu catálogo</h2></div><div class="section-actions"><button type="button" id="undo-btn" class="button button-quiet" disabled><svg class="icon"><use href="#i-undo"/></svg>Deshacer</button><button type="button" id="export-btn" class="button button-primary" disabled><svg class="icon"><use href="#i-download"/></svg>Exportar Excel</button></div></div>
+      <div class="metrics">
+        <button type="button" class="metric" data-metric="all"><div><span class="metric-label">Productos en la carga</span><strong id="metric-total">—</strong><small id="metric-total-note">Esperando tu archivo</small></div><span class="metric-icon"><svg class="icon"><use href="#i-grid"/></svg></span></button>
+        <button type="button" class="metric" data-metric="clean"><div><span class="metric-label">Sin errores</span><strong id="metric-clean">—</strong><small>Listos para la revisión final</small></div><span class="metric-icon green"><svg class="icon"><use href="#i-check"/></svg></span></button>
+        <button type="button" class="metric" data-metric="errors"><div><span class="metric-label">Necesitan ajustes</span><strong id="metric-errors">—</strong><small>Campos por corregir</small></div><span class="metric-icon coral"><svg class="icon"><use href="#i-alert"/></svg></span></button>
+        <button type="button" class="metric" data-metric="duplicates"><div><span class="metric-label">SKU repetidos</span><strong id="metric-duplicates">—</strong><small>Códigos en más de una fila</small></div><span class="metric-icon amber"><svg class="icon"><use href="#i-copy"/></svg></span></button>
+      </div>
+      <div class="data-panel panel">
+        <div class="table-toolbar"><div class="search-field"><svg class="icon"><use href="#i-search"/></svg><input type="search" id="search-input" placeholder="Buscar por SKU, nombre o ubicación…" aria-label="Buscar productos"></div><select id="category-filter" aria-label="Filtrar por categoría"><option value="">Todas las categorías</option></select><select id="status-filter" aria-label="Filtrar por revisión"><option value="all">Todos los productos</option><option value="errors">Con errores</option><option value="warnings">Con avisos</option><option value="clean">Sin errores ni avisos</option><option value="duplicates">SKU repetidos</option><option value="excluded">Excluidos del Excel</option></select><button type="button" class="button button-outline" id="bulk-btn" disabled><svg class="icon"><use href="#i-edit"/></svg>Editar lote</button><button type="button" class="button button-square button-outline" id="add-row-btn" title="Agregar producto" aria-label="Agregar producto"><svg class="icon"><use href="#i-plus"/></svg></button></div>
+        <div class="selection-bar" id="selection-bar" hidden><span id="selection-count"></span><button type="button" class="text-link" id="select-filtered-btn">Seleccionar todos los filtrados</button><div class="selection-end"><button type="button" class="text-link danger-text" id="exclude-selected-btn">Excluir del Excel</button><button type="button" class="button button-icon" id="clear-selection-btn" aria-label="Quitar selección"><svg class="icon"><use href="#i-x"/></svg></button></div></div>
+        <div class="review-banner" id="review-banner" hidden><svg class="icon"><use href="#i-info"/></svg><span id="review-banner-text"></span><button type="button" class="text-link" id="resolve-categories-btn">Revisar categorías<svg class="icon"><use href="#i-arrow"/></svg></button></div>
+        <div class="table-scroll" id="table-container">
+          <table id="products-table" hidden><thead><tr><th class="select-col"><input type="checkbox" id="select-page" aria-label="Seleccionar productos de esta página"></th><th class="sku-col">SKU</th><th class="name-col">Producto</th><th>Categoría</th><th class="number-col">Piezas</th><th class="price-col">Precio base</th><th class="price-col">Precio actual</th><th>Ubicación</th><th>Revisión</th><th><span class="sr-only">Editar</span></th></tr></thead><tbody id="products-body"></tbody></table>
+          <div class="table-empty" id="table-empty"><div class="empty-grid"><svg class="icon"><use href="#i-grid"/></svg><span class="empty-mini-check"><svg class="icon"><use href="#i-check"/></svg></span></div><h3>Tu próximo catálogo empieza aquí</h3><p>Sube tu inventario y revisa el resultado antes de descargarlo.<br>Puedes cambiar una fila o cientos a la vez.</p><button type="button" class="button button-outline" id="empty-upload-btn"><svg class="icon"><use href="#i-upload"/></svg>Elegir mi inventario</button></div>
+        </div>
+        <div class="table-footer"><span id="table-range">Sin productos todavía</span><div class="pagination"><label for="page-size">Por página</label><select id="page-size"><option value="20">20</option><option value="50">50</option><option value="100">100</option></select><button type="button" class="button button-icon" id="prev-page" aria-label="Página anterior" disabled><svg class="icon flip"><use href="#i-chevron"/></svg></button><span id="page-number">1 / 1</span><button type="button" class="button button-icon" id="next-page" aria-label="Página siguiente" disabled><svg class="icon"><use href="#i-chevron"/></svg></button></div></div>
+      </div>
+      <div class="below-table"><span><svg class="icon"><use href="#i-info"/></svg>Los cambios solo afectan el archivo que vas a descargar.</span><div><button type="button" class="text-link" id="reset-overrides-btn" disabled>Quitar ajustes manuales</button><button type="button" class="text-link" id="report-btn" disabled><svg class="icon"><use href="#i-download"/></svg>Reporte de incidencias</button></div></div>
+    </section>
+    <footer class="page-footer"><span class="footer-brand">noventia.</span><span>Menos pasos. Más catálogo.</span><span>Herramienta de carga · v1.0</span></footer>
+  </main>
+
+  <datalist id="category-options"></datalist><datalist id="warehouse-options"></datalist><datalist id="currency-options"><option value="MXN"></option></datalist>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <div id="loading-overlay" class="loading-overlay" hidden role="status" aria-live="polite"><div class="loading-card"><span class="spinner"></span><strong id="loading-title">Leyendo tu archivo…</strong><p id="loading-note">Esto puede tardar unos segundos.</p></div></div>
+
+  <dialog id="edit-dialog" class="dialog edit-dialog" aria-labelledby="edit-heading"><form id="edit-form"><div class="dialog-heading"><div><div class="eyebrow" id="edit-origin"></div><h2 id="edit-heading">Editar producto</h2></div><button type="button" class="button button-icon" data-close="edit-dialog" aria-label="Cerrar edición"><svg class="icon"><use href="#i-x"/></svg></button></div><div class="dialog-body"><div id="edit-issues"></div><div class="field-grid edit-main-fields" id="edit-main-fields"></div><details class="extra-fields"><summary>Etiquetas, medidas y variaciones</summary><div class="field-grid" id="edit-extra-fields"></div></details></div><div class="dialog-footer"><button type="button" class="text-link danger-text" id="exclude-row-btn">Excluir del Excel</button><div><button type="button" class="button button-outline" data-close="edit-dialog">Cancelar</button><button type="submit" class="button button-primary">Guardar producto</button></div></div></form></dialog>
+
+  <dialog id="bulk-dialog" class="dialog" aria-labelledby="bulk-heading"><form id="bulk-form"><div class="dialog-heading"><div><div class="eyebrow">CAMBIOS POR LOTE</div><h2 id="bulk-heading">Un ajuste para muchos productos</h2></div><button type="button" class="button button-icon" data-close="bulk-dialog" aria-label="Cerrar edición masiva"><svg class="icon"><use href="#i-x"/></svg></button></div><div class="dialog-body"><label class="field">Aplicar a<select id="bulk-scope"><option value="selected">Productos seleccionados</option><option value="filtered">Productos del filtro actual</option><option value="all">Todo el catálogo</option></select></label><div class="field-grid two-cols"><label class="field">Campo<select id="bulk-field"><option value="prices">Ambos precios</option></select></label><label class="field">Acción<select id="bulk-operation"><option value="set">Asignar un valor</option><option value="replace">Buscar y reemplazar texto</option><option value="percent">Ajustar por porcentaje</option></select></label></div><label class="field" id="bulk-find-wrap" hidden>Buscar<input id="bulk-find" placeholder="Texto exacto que se reemplazará"></label><label class="field"><span id="bulk-value-label">Nuevo valor</span><input id="bulk-value" autocomplete="off"></label><div class="bulk-summary"><svg class="icon"><use href="#i-edit"/></svg><span id="bulk-summary">Se modificarán 0 productos.</span></div><p class="subtle">Puedes deshacer este cambio. Los ajustes manuales tienen prioridad sobre las reglas de conversión.</p><div class="form-error" id="bulk-error" role="alert" hidden></div></div><div class="dialog-footer"><div></div><div><button type="button" class="button button-outline" data-close="bulk-dialog">Cancelar</button><button type="submit" class="button button-primary" id="bulk-submit">Aplicar al lote</button></div></div></form></dialog>
+
+  <dialog id="export-dialog" class="dialog export-dialog" aria-labelledby="export-heading"><div class="dialog-heading"><div><div class="eyebrow">TU ARCHIVO FINAL</div><h2 id="export-heading">Descarga tu catálogo</h2></div><button type="button" class="button button-icon" data-close="export-dialog" aria-label="Cerrar descarga"><svg class="icon"><use href="#i-x"/></svg></button></div><div class="dialog-body"><div id="export-warning" class="export-warning" hidden></div><div class="export-choices" id="export-choices"></div><label class="field">Nombre del archivo<input id="export-filename" value="Catalogo_Noventia_plantilla.xlsx"></label><p class="inline-note"><svg class="icon"><use href="#i-file"/></svg>Se conservan las hojas, los catálogos y el formato de tu plantilla. Los productos excluidos no se incluyen.</p></div><div class="dialog-footer"><span id="export-count" class="subtle"></span><div><button type="button" class="button button-outline" data-close="export-dialog">Cancelar</button><button type="button" class="button button-primary" id="confirm-export"><svg class="icon"><use href="#i-download"/></svg>Descargar Excel</button></div></div></dialog>
+</body>
+</html>
